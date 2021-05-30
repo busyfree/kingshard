@@ -118,15 +118,16 @@ func main() {
 		svr.Close()
 		return
 	}
-	prometheusSvr, err = monitor.NewPrometheus(cfg.PrometheusAddr, svr)
-	if err != nil {
-		golog.Error("main", "main", err.Error(), 0)
-		golog.GlobalSysLogger.Close()
-		golog.GlobalSqlLogger.Close()
-		svr.Close()
-		return
+	if len(cfg.PrometheusAddr) > 0 {
+		prometheusSvr, err = monitor.NewPrometheus(cfg.PrometheusAddr, svr)
+		if err != nil {
+			golog.Error("main", "main", err.Error(), 0)
+			golog.GlobalSysLogger.Close()
+			golog.GlobalSqlLogger.Close()
+			svr.Close()
+			return
+		}
 	}
-
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc,
 		syscall.SIGINT,
@@ -158,7 +159,9 @@ func main() {
 		}
 	}()
 	go apiSvr.Run()
-	go prometheusSvr.Run()
+	if len(cfg.PrometheusAddr) > 0 {
+		go prometheusSvr.Run()
+	}
 	svr.Run()
 }
 
