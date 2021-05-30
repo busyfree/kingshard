@@ -29,7 +29,7 @@ kingshard采用（shardKey%子表个数）的方式得到子表下标。优点�
 在配置文件中，有关sharding设置是通过schema设置：
 
  ```
- schema :
+ schema_list :
 -
     nodes: [node1,node2]
     rules:
